@@ -10,6 +10,7 @@ class Matrix
 public:
 	Matrix();
 	Matrix(int r, int c);
+	Matrix(int r, int c, const M& v);
 	~Matrix();
 	void Input();
 	void Output();
@@ -53,6 +54,25 @@ Matrix<M>::Matrix(int r, int c)
 		for (int j = 0; j < columns; j++)
 		{
 			ptr[i][j] = rand() % 20;
+		}
+	}
+}
+
+template<typename M>
+Matrix<M>::Matrix(int r, int c, const M& v)
+{
+	rows = r;
+	columns = c;
+	ptr = new M * [rows];
+	for (int i = 0; i < rows; i++)
+	{
+		ptr[i] = new M[columns];
+	}
+	for (int i = 0; i < rows; i++)
+	{
+		for (int j = 0; j < columns; j++)
+		{
+			ptr[i][j] = v;
 		}
 	}
 }
@@ -156,7 +176,7 @@ Matrix<M> Matrix<M>::operator+(Matrix<M>& obj2)
 	{
 		for (int j = 0; j < columns; j++)
 		{
-			M check = Check(obj2,i,j) ? obj2.ptr[i][j] : 0;
+			M check = Check(obj2,i,j) ? obj2.ptr[i][j] : M();
 			res.ptr[i][j] = ptr[i][j] + check;
 		}
 	}
@@ -171,7 +191,7 @@ Matrix<M> Matrix<M>::operator-(Matrix<M>& obj2)
 	{
 		for (int j = 0; j < columns; j++)
 		{
-			M check = Check(obj2, i, j) ? obj2.ptr[i][j] : 0;
+			M check = Check(obj2, i, j) ? obj2.ptr[i][j] : M();
 			res.ptr[i][j] = ptr[i][j] - check;
 		}
 	}
@@ -186,7 +206,7 @@ Matrix<M> Matrix<M>::operator/(Matrix<M>& obj2)
 	{
 		for (int j = 0; j < columns; j++)
 		{
-			M check = Check(obj2, i, j) ? obj2.ptr[i][j] : 1;
+			M check = Check(obj2, i, j) ? obj2.ptr[i][j] : M(1);
 			res.ptr[i][j] = ptr[i][j] / check;
 		}
 	}
@@ -201,7 +221,7 @@ Matrix<M> Matrix<M>::operator*(Matrix<M>& obj2)
 	{
 		for (int j = 0; j < columns; j++)
 		{
-			M check = Check(obj2, i, j) ? obj2.ptr[i][j] : 1;
+			M check = Check(obj2, i, j) ? obj2.ptr[i][j] : M(1);
 			res.ptr[i][j] = ptr[i][j] * check;
 		}
 	}
@@ -214,11 +234,84 @@ bool Matrix<M>::Check(Matrix<M>& obj, int r, int c)
 	return obj.GetRows() > r && obj.GetColumns() > c;
 }
 
+class Point
+{
+	int x;
+	int y;
+public:
+	Point()
+	{
+		x = 0;
+		y = 0;
+	}
+	Point(int a, int b)
+	{
+		x = a;
+		y = b;
+	}
+	Point(int a)
+	{
+		x = a;
+		y = a;
+	}
+	void Print()
+	{
+		cout << "X: " << x << " Y: " << y << endl;
+	}
+	Point operator+(Point& obj2)
+	{
+		Point rez(x + obj2.x, y + obj2.y);
+		return rez;
+	}
+	Point operator-(Point& obj2)
+	{
+		Point rez(x - obj2.x, y - obj2.y);
+		return rez;
+	}
+	Point operator*(Point& obj2)
+	{
+		Point rez(x * obj2.x, y * obj2.y);
+		return rez;
+	}
+	Point operator/(Point& obj2)
+	{
+		Point rez(x / obj2.x, y / obj2.y);
+		return rez;
+	}
+	int GetX()
+	{
+		return x;
+	}
+	int GetY()
+	{
+		return y;
+	}
+};
+
+ostream& operator<<(ostream& os, Point& obj)
+{
+	os << obj.GetX() << "," << obj.GetY();
+	return os;
+}
+
 int main()
 {
 	srand(unsigned(time(0)));
 
-	Matrix<int> obj(4, 5);
+	Matrix<Point> obj(4,5,Point(2,3));
+	obj.Output();
+	Matrix<Point> obj2(3, 4, Point(5, 1));
+	obj2.Output();
+	Matrix<Point> obj3 = obj * obj2;
+	obj3.Output();
+	Matrix<Point> obj4 = obj + obj2;
+	obj4.Output();
+	Matrix<Point> obj5 = obj - obj2;
+	obj5.Output();
+	Matrix<Point> obj6 = obj / obj2;
+	obj6.Output();
+
+	/*Matrix<int> obj(4, 5);
 	obj.Output();
 	obj.MinElement();
 	obj.MaxElement();
@@ -236,7 +329,7 @@ int main()
 	obj5.Output();
 
 	Matrix<int> obj6 = obj / obj2;
-	obj6.Output();
+	obj6.Output();*/
 
 	/*Matrix<int> obj2;
 	obj2.Input();
